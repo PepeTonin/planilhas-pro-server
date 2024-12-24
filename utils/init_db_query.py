@@ -49,6 +49,16 @@ CREATE TABLE IF NOT EXISTS alunos_grupos (
         REFERENCES grupos (grupoId)
 );
 
+CREATE TABLE IF NOT EXISTS alunos_sub_grupos (
+    alunoId INT,
+    subGrupoId INT,
+    PRIMARY KEY (alunoId , subGrupoId),
+    FOREIGN KEY (alunoId)
+        REFERENCES alunos (alunoId),
+    FOREIGN KEY (subGrupoId)
+        REFERENCES sub_grupos (subGrupoId)
+);
+
 CREATE TABLE IF NOT EXISTS movimentos (
     movimentoId INT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(100) NOT NULL,
@@ -141,6 +151,18 @@ CREATE TABLE IF NOT EXISTS planilha_treino_relacionamentos (
     PRIMARY KEY (treinoId , planilhaId),
     FOREIGN KEY (treinoId)
         REFERENCES treinos (treinoId),
+    FOREIGN KEY (planilhaId)
+        REFERENCES planilhas (planilhaId)
+);
+
+CREATE TABLE IF NOT EXISTS alunos_planilhas (
+    alunoId INT NOT NULL,
+    planilhaId INT NOT NULL,
+    dataInicio DATE NOT NULL,
+    dataFim DATE NOT NULL,
+    PRIMARY KEY (alunoId, planilhaId),
+    FOREIGN KEY (alunoId)
+        REFERENCES alunos (alunoId),
     FOREIGN KEY (planilhaId)
         REFERENCES planilhas (planilhaId)
 );
