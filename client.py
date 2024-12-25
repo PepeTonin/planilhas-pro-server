@@ -84,6 +84,28 @@ def test_create_treino():
         print(response.text)
 
 
+def test_get_movimentos_by_professor():
+    url = f"{BASE_URL}/movimentos/1"
+    response = requests.get(url)
+    if response.status_code == 200:
+        print("Dados:")
+        print(response.json())
+    else:
+        print(f"Status: {response.status_code}")
+        print(response.text)
+
+
+def test_get_movimento_by_id():
+    url = f"{BASE_URL}/movimento/1/1"
+    response = requests.get(url)
+    if response.status_code == 200:
+        print("Dados:")
+        print(response.json())
+    else:
+        print(f"Status: {response.status_code}")
+        print(response.text)
+
+
 if __name__ == "__main__":
     # Chamar as funções de teste
-    test_create_treino()
+    test_get_movimento_by_id()

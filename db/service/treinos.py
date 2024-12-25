@@ -34,3 +34,69 @@ def db_create_new_treino(
     cursor.close()
     connection.close()
     return id_treino
+
+
+def db_get_treino_by_id(id_treino: int):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    query = """
+        SELECT * FROM treinos WHERE id = %s;
+    """
+    cursor.execute(query, (id_treino,))
+    treino = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    return treino
+
+
+def db_get_treinos_by_professor_id(id_professor: int):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    query = """
+        SELECT * FROM treinos WHERE professorId = %s;
+    """
+    cursor.execute(query, (id_professor,))
+    treinos = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return treinos
+
+
+def db_get_all_movimentos(idProfessor: int):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    query = """
+        SELECT movimentoId, titulo FROM movimentos WHERE professorId = %s;
+    """
+    cursor.execute(query, (idProfessor,))
+    movimentos = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return movimentos
+
+
+def db_get_movimento_by_id(idMovimento: int, idProfessor: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)  # Retorna os resultados como dicionário
+    query = """
+        SELECT 
+            m.movimentoId,
+            m.titulo,
+            d.descricaoMovimentoId,
+            d.descricao
+        FROM 
+            movimentos m
+        LEFT JOIN 
+            descricoes_movimentos d ON m.movimentoId = d.movimentoId
+        WHERE 
+            m.movimentoId = %s AND m.professorId = %s;
+    """
+    cursor.execute(query, (idMovimento, idProfessor))
+    resultados = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    if not resultados:
+        return None
+
+    return resultados

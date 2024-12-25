@@ -24,7 +24,16 @@ from db.service.alunos import (
 )
 from utils.mapping.alunos import map_alunos_in_id_nome, map_alunos
 
-from db.service.treinos import db_create_new_treino
+from db.service.treinos import (
+    db_create_new_treino,
+    db_get_all_movimentos,
+    db_get_movimento_by_id,
+)
+from utils.mapping.treinos import (
+    map_movimentos_by_professor_response,
+    map_movimento_by_id_response,
+)
+
 
 from schemas.Login import BodyRequestLogin
 from schemas.Grupo import BodyRequestInsertGrupo, BodyRequestInsertSubGrupo
@@ -135,3 +144,17 @@ def create_new_treino(request: BodyRequestCreateTreino):
         status_code=500,
         content={"message": "Erro ao inserir treino"},
     )
+
+
+@app.get("/api/v1/movimentos/{idProfessor}")
+def get_movimentos_by_professor(idProfessor: str):
+    movimentos = db_get_all_movimentos(idProfessor)
+    mapped_movimentos = map_movimentos_by_professor_response(movimentos)
+    return mapped_movimentos
+
+
+@app.get("/api/v1/movimento/{idMovimento}/{idProfessor}")
+def get_movimento_by_id(idMovimento: str, idProfessor: str):
+    movimento = db_get_movimento_by_id(idMovimento, idProfessor)
+    mapped_movimento = map_movimento_by_id_response(movimento)
+    return mapped_movimento
