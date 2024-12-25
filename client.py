@@ -50,7 +50,40 @@ def test_create_subgrupo():
         print(response.text)
 
 
+def test_create_treino():
+    url = f"{BASE_URL}/treino/novo"
+    data = {
+        "idProfessor": 1,
+        "titulo": "titulo treino",
+        "descricao": "descricao treino",
+        "movimentos": [
+            {
+                "id": 1,
+                "titulo": "movimentoA",
+                "descricoes": [
+                    {"id": 1, "descricao": "descricao1"},
+                    {"id": 2, "descricao": "descricao2"},
+                ],
+            },
+            {
+                "id": 2,
+                "titulo": "easas",
+                "descricoes": [
+                    {"id": 3, "descricao": "descricao1"},
+                    {"id": 4, "descricao": "descricao2"},
+                ],
+            },
+        ],
+    }
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+        print("Dados:")
+        print(response.json())
+    else:
+        print(f"Status: {response.status_code}")
+        print(response.text)
+
+
 if __name__ == "__main__":
     # Chamar as funções de teste
-    test_create_grupo()
-    test_create_subgrupo()
+    test_create_treino()

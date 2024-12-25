@@ -77,7 +77,8 @@ CREATE TABLE IF NOT EXISTS descricoes_movimentos (
 
 CREATE TABLE IF NOT EXISTS treinos (
     treinoId INT PRIMARY KEY AUTO_INCREMENT,
-    descricao VARCHAR(255) NOT NULL,
+    titulo VARCHAR(100) NOT NULL,
+    descricao VARCHAR(255),
     professorId INT,
     FOREIGN KEY (professorId)
         REFERENCES professores (professorId)
@@ -113,7 +114,8 @@ CREATE TABLE IF NOT EXISTS treino_movimento_relacionamentos (
 
 CREATE TABLE IF NOT EXISTS planilhas (
     planilhaId INT PRIMARY KEY AUTO_INCREMENT,
-    descricao VARCHAR(255) NOT NULL,
+    titulo VARCHAR(100) NOT NULL,
+    descricao VARCHAR(255),
     professorId INT,
     FOREIGN KEY (professorId)
         REFERENCES professores (professorId)

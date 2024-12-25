@@ -24,8 +24,11 @@ from db.service.alunos import (
 )
 from utils.mapping.alunos import map_alunos_in_id_nome, map_alunos
 
+from db.service.treinos import db_create_new_treino
+
 from schemas.Login import BodyRequestLogin
 from schemas.Grupo import BodyRequestInsertGrupo, BodyRequestInsertSubGrupo
+from schemas.Treino import BodyRequestCreateTreino
 
 app = FastAPI()
 
@@ -54,11 +57,10 @@ def login_professor(request: BodyRequestLogin):
     professor = db_login_professor(request.email, request.senha)
     if professor:
         return professor
-    else:
-        return JSONResponse(
-            status_code=401,
-            content={"message": "Credenciais inválidas"},
-        )
+    return JSONResponse(
+        status_code=401,
+        content={"message": "Credenciais inválidas"},
+    )
 
 
 @app.post("/api/v1/novo/grupo")
@@ -66,11 +68,10 @@ def insert_grupo(request: BodyRequestInsertGrupo):
     id_new_grupo = db_insert_new_grupo(request.nome, request.idProfessor)
     if id_new_grupo:
         return {"message": "Grupo inserido com sucesso", "id": id_new_grupo}
-    else:
-        return JSONResponse(
-            status_code=500,
-            content={"message": "Erro ao inserir grupo"},
-        )
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Erro ao inserir grupo"},
+    )
 
 
 @app.post("/api/v1/novo/subgrupo")
@@ -78,11 +79,10 @@ def insert_grupo(request: BodyRequestInsertSubGrupo):
     id_new_subgrupo = db_insert_new_subgrupo(request.nome, request.idGrupo)
     if id_new_subgrupo:
         return {"message": "Subgrupo inserido com sucesso", "id": id_new_subgrupo}
-    else:
-        return JSONResponse(
-            status_code=500,
-            content={"message": "Erro ao inserir Subgrupo"},
-        )
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Erro ao inserir subgrupo"},
+    )
 
 
 @app.get("/api/v1/grupos/{idProfessor}")
@@ -122,3 +122,16 @@ def get_alunos_by_professor_grupo_and_subgrupo(
     )
     mapped_alunos = map_alunos_in_id_nome(alunos)
     return mapped_alunos
+
+
+@app.post("/api/v1/treino/novo")
+def create_new_treino(request: BodyRequestCreateTreino):
+    id_treino = db_create_new_treino(
+        request.idProfessor, request.titulo, request.descricao, request.movimentos
+    )
+    if id_treino:
+        return {"message": "Treino inserido com sucesso", "id": id_treino}
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Erro ao inserir treino"},
+    )
