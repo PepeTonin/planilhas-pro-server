@@ -106,6 +106,28 @@ def test_get_movimento_by_id():
         print(response.text)
 
 
+def test_get_modelos():
+    url = f"{BASE_URL}/planilha/modelos/1"
+    response = requests.get(url)
+    if response.status_code == 200:
+        print("Dados:")
+        print(response.json())
+    else:
+        print(f"Status: {response.status_code}")
+        print(response.text)
+
+
+def test_get_planilha_by_id():
+    url = f"{BASE_URL}/planilha/1"
+    response = requests.get(url)
+    if response.status_code == 200:
+        print("Dados:")
+        print(response.json())
+    else:
+        print(f"Status: {response.status_code}")
+        print(response.text)
+
+
 if __name__ == "__main__":
     # Chamar as funções de teste
-    test_get_movimento_by_id()
+    test_get_planilha_by_id()

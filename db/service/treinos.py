@@ -36,6 +36,7 @@ def db_create_new_treino(
     return id_treino
 
 
+# mudar para trazer tudo
 def db_get_treino_by_id(id_treino: int):
     connection = get_db_connection()
     cursor = connection.cursor()

@@ -34,10 +34,21 @@ from utils.mapping.treinos import (
     map_movimento_by_id_response,
 )
 
+from db.service.planilhas import (
+    db_get_all_modelos,
+    db_get_planilha_by_id,
+    db_create_new_planilha,
+)
+from utils.mapping.planilhas import (
+    map_modelos_by_professor_response,
+    map_planilha_by_id_response,
+)
+
 
 from schemas.Login import BodyRequestLogin
 from schemas.Grupo import BodyRequestInsertGrupo, BodyRequestInsertSubGrupo
 from schemas.Treino import BodyRequestCreateTreino
+from schemas.Planilha import BodyRequestCreatePlanilha
 
 app = FastAPI()
 
@@ -158,3 +169,30 @@ def get_movimento_by_id(idMovimento: str, idProfessor: str):
     movimento = db_get_movimento_by_id(idMovimento, idProfessor)
     mapped_movimento = map_movimento_by_id_response(movimento)
     return mapped_movimento
+
+
+@app.get("/api/v1/planilha/modelos/{idProfessor}")
+def get_modelos_planilha_by_professor(idProfessor: str):
+    modelos = db_get_all_modelos(idProfessor)
+    mapped_modelos = map_modelos_by_professor_response(modelos)
+    return mapped_modelos
+
+
+@app.get("/api/v1/planilha/{idPlanilha}")
+def get_planilha_by_id(idPlanilha: str):
+    planilha = db_get_planilha_by_id(idPlanilha)
+    mapped_planilha = map_planilha_by_id_response(planilha)
+    return mapped_planilha
+
+
+@app.post("/api/v1/planilha/nova")
+def create_new_planilha(request: BodyRequestCreatePlanilha):
+    id_planilha = db_create_new_planilha(
+        request.idProfessor, request.titulo, request.descricao, request.sessoes
+    )
+    if id_planilha:
+        return {"message": "Planilha inserida com sucesso", "id": id_planilha}
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Erro ao inserir planilha"},
+    )

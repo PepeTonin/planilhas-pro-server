@@ -144,17 +144,10 @@ CREATE TABLE IF NOT EXISTS modelos_planilha (
     titulo VARCHAR(100) NOT NULL,
     planilhaId INT NOT NULL,
     FOREIGN KEY (planilhaId)
-        REFERENCES planilhas (planilhaId)
-);
-
-CREATE TABLE IF NOT EXISTS planilha_treino_relacionamentos (
-    treinoId INT NOT NULL,
-    planilhaId INT NOT NULL,
-    PRIMARY KEY (treinoId , planilhaId),
-    FOREIGN KEY (treinoId)
-        REFERENCES treinos (treinoId),
-    FOREIGN KEY (planilhaId)
-        REFERENCES planilhas (planilhaId)
+        REFERENCES planilhas (planilhaId),
+    professorId INT NOT NULL,
+    FOREIGN KEY (professorId)
+        REFERENCES professores (professorId)
 );
 
 CREATE TABLE IF NOT EXISTS alunos_planilhas (
@@ -162,10 +155,29 @@ CREATE TABLE IF NOT EXISTS alunos_planilhas (
     planilhaId INT NOT NULL,
     dataInicio DATE NOT NULL,
     dataFim DATE NOT NULL,
-    PRIMARY KEY (alunoId, planilhaId),
+    PRIMARY KEY (alunoId , planilhaId),
     FOREIGN KEY (alunoId)
         REFERENCES alunos (alunoId),
     FOREIGN KEY (planilhaId)
         REFERENCES planilhas (planilhaId)
+);
+
+CREATE TABLE IF NOT EXISTS sessoes (
+    sessaoId INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(100) NOT NULL,
+    planilhaId INT NOT NULL,
+    FOREIGN KEY (planilhaId)
+        REFERENCES planilhas (planilhaId)
+);
+
+CREATE TABLE IF NOT EXISTS blocos_treino (
+    blocoTreinoId INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(100) NOT NULL,
+    sessaoId INT NOT NULL,
+    treinoId INT NOT NULL,
+    FOREIGN KEY (sessaoId)
+        REFERENCES sessoes (sessaoId),
+	FOREIGN KEY (treinoId)
+        REFERENCES treinos (treinoId)
 );
 """
