@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from datetime import datetime
+
 from db.init import init_db
 
 from db.service.login import db_login_professor
@@ -28,16 +30,20 @@ from db.service.treinos import (
     db_create_new_treino,
     db_get_all_movimentos,
     db_get_movimento_by_id,
+    db_get_treinos_by_professor_id,
 )
 from utils.mapping.treinos import (
     map_movimentos_by_professor_response,
     map_movimento_by_id_response,
+    map_treinos_by_professor_response,
 )
 
 from db.service.planilhas import (
     db_get_all_modelos,
     db_get_planilha_by_id,
     db_create_new_planilha,
+    db_vincular_planilha_aluno,
+    db_get_planilhas_ativas_by_aluno,
 )
 from utils.mapping.planilhas import (
     map_modelos_by_professor_response,
@@ -48,7 +54,9 @@ from utils.mapping.planilhas import (
 from schemas.Login import BodyRequestLogin
 from schemas.Grupo import BodyRequestInsertGrupo, BodyRequestInsertSubGrupo
 from schemas.Treino import BodyRequestCreateTreino
-from schemas.Planilha import BodyRequestCreatePlanilha
+from schemas.Planilha import BodyRequestCreatePlanilha, BodyRequestVincular
+
+from utils.verifica_owner_planilha import verifica_owner_planilha
 
 app = FastAPI()
 
@@ -157,6 +165,14 @@ def create_new_treino(request: BodyRequestCreateTreino):
     )
 
 
+@app.get("/api/v1/treinos/{idProfessor}")
+def get_treinos_by_professor(idProfessor: str):
+    treinos = db_get_treinos_by_professor_id(idProfessor)
+    mapped_treinos = map_treinos_by_professor_response(treinos)
+    return mapped_treinos
+    pass
+
+
 @app.get("/api/v1/movimentos/{idProfessor}")
 def get_movimentos_by_professor(idProfessor: str):
     movimentos = db_get_all_movimentos(idProfessor)
@@ -196,3 +212,28 @@ def create_new_planilha(request: BodyRequestCreatePlanilha):
         status_code=500,
         content={"message": "Erro ao inserir planilha"},
     )
+
+
+@app.post("/api/v1/planilha/{idPlanilha}/vincular")
+def vincular_planilha_a_aluno(request: BodyRequestVincular, idPlanilha: str):
+    verificador = verifica_owner_planilha(request.idProfessor, idPlanilha)
+    if not verificador:
+        return JSONResponse(
+            status_code=401,
+            content={"message": "Você não tem permissão para vincular essa planilha"},
+        )
+    resultado = db_vincular_planilha_aluno(
+        idPlanilha, request.dataInicio, request.dataFim, request.alunos
+    )
+    if resultado:
+        return {"message": "Planilha vinculada com sucesso"}
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Erro ao vincular planilha"},
+    )
+
+
+@app.get("api/v1/aluno/{idAluno}/planilha")
+def get_planilhas_ativas_by_aluno(idAluno: str):
+    planilhas = db_get_planilhas_ativas_by_aluno(idAluno, str(datetime.now().date()))
+    print(planilhas)

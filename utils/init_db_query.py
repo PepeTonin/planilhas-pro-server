@@ -1,4 +1,7 @@
 create_table_query = """
+use db_planilhas_pro;
+
+
 CREATE TABLE IF NOT EXISTS professores (
     professorId INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
@@ -151,11 +154,11 @@ CREATE TABLE IF NOT EXISTS modelos_planilha (
 );
 
 CREATE TABLE IF NOT EXISTS alunos_planilhas (
+	alunoPlanilhaRelacionamentoId INT PRIMARY KEY AUTO_INCREMENT,
     alunoId INT NOT NULL,
     planilhaId INT NOT NULL,
     dataInicio DATE NOT NULL,
     dataFim DATE NOT NULL,
-    PRIMARY KEY (alunoId , planilhaId),
     FOREIGN KEY (alunoId)
         REFERENCES alunos (alunoId),
     FOREIGN KEY (planilhaId)

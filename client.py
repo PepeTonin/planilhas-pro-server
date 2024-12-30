@@ -128,6 +128,23 @@ def test_get_planilha_by_id():
         print(response.text)
 
 
+def test_vincular_planilha_a_aluno():
+    url = f"{BASE_URL}/planilha/1/vincular"
+    data = {
+        "idProfessor": 1,
+        "dataInicio": "2024-03-01",
+        "dataFim": "2024-03-31",
+        "alunos": [1, 2, 3],
+    }
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+        print("Dados:")
+        print(response.json())
+    else:
+        print(f"Status: {response.status_code}")
+        print(response.text)
+
+
 if __name__ == "__main__":
     # Chamar as funções de teste
-    test_get_planilha_by_id()
+    test_vincular_planilha_a_aluno()

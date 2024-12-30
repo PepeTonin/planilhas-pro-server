@@ -16,6 +16,7 @@ def map_planilha_by_id_response(dados):
         "id": dados[0]["planilhaId"],
         "title": dados[0]["tituloPlanilha"],
         "description": dados[0]["descricaoPlanilha"],
+        "owner": dados[0]["professorId"],
         "sessions": [],
     }
 

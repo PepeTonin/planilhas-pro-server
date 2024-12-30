@@ -1,24 +1,6 @@
-# from db.init import get_db_connection
+from db.init import get_db_connection
 
-import os
-import mysql.connector
-from dotenv import load_dotenv
-
-# from utils.init_db_query import create_table_query
-
-load_dotenv()
-
-db_config = {
-    "host": os.getenv("DB_HOST"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DB_NAME"),
-}
-
-
-def get_db_connection():
-    connection = mysql.connector.connect(**db_config)
-    return connection
+from utils.init_db_query import create_table_query
 
 
 def db_get_all_modelos(idProfessor: int):
@@ -43,6 +25,7 @@ def db_get_planilha_by_id(idPlanilha: int):
             p.planilhaId AS planilhaId,
             p.titulo AS tituloPlanilha,
             p.descricao AS descricaoPlanilha,
+            p.professorId AS professorId,
             s.sessaoId AS idSessao,
             s.titulo AS tituloSessao,
             bt.blocoTreinoId AS idBlocoTreino,
@@ -98,43 +81,64 @@ def db_create_new_planilha(
     return id_planilha
 
 
+def db_vincular_planilha_aluno(
+    idPlanilha: int, dataInicio: str, dataFim: str, alunos: list
+):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        query = """
+            INSERT INTO alunos_planilhas (alunoId, planilhaId, dataInicio, dataFim)
+            VALUES (%s, %s, %s, %s);
+        """
+        for aluno in alunos:
+            cursor.execute(query, (aluno, idPlanilha, dataInicio, dataFim))
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return True
+    except:
+        cursor.close()
+        connection.close()
+        return False
+
+
+def db_get_planilhas_ativas_by_aluno(idAluno: int, dataBuscada: str):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    query = """
+        SELECT
+            p.planilhaId AS planilhaId,
+            p.titulo AS tituloPlanilha,
+            p.descricao AS descricaoPlanilha,
+            p.professorId AS professorId,
+            s.sessaoId AS idSessao,
+            s.titulo AS tituloSessao,
+            bt.blocoTreinoId AS idBlocoTreino,
+            bt.titulo AS tituloBlocoTreino,
+            t.treinoId AS idTreino,
+            t.titulo AS tituloTreino
+        FROM
+            planilhas p
+        LEFT JOIN
+            sessoes s ON p.planilhaId = s.planilhaId
+        LEFT JOIN
+            blocos_treino bt ON s.sessaoId = bt.sessaoId
+        LEFT JOIN
+            treinos t ON bt.treinoId = t.treinoId
+        WHERE
+            p.planilhaId IN (
+                SELECT planilhaId
+                FROM alunos_planilhas
+                WHERE alunoId = %s AND dataInicio <= %s AND dataFim >= %s
+            );
+    """
+    cursor.execute(query, (idAluno, dataBuscada, dataBuscada))
+    planilha = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return planilha
+
+
 if __name__ == "__main__":
-    planilha = db_get_planilha_by_id(1)
-
-    planilha_data = {
-        "id": planilha[0]["planilhaId"],
-        "titulo": planilha[0]["tituloPlanilha"],
-        "descricao": planilha[0]["descricaoPlanilha"],
-        "sessoes": [],
-    }
-
-    # Usando um dicionário para evitar duplicatas
-    sessoes_dict = {}
-
-    for sessao in planilha:
-        sessao_id = sessao["idSessao"]
-
-        if sessao_id not in sessoes_dict:
-            # Se a sessão ainda não foi adicionada, cria um novo registro
-            sessoes_dict[sessao_id] = {
-                "id": sessao["idSessao"],
-                "titulo": sessao["tituloSessao"],
-                "blocos": [],
-            }
-
-        # Adiciona o bloco à sessão correspondente
-        bloco = {
-            "id": sessao["idBlocoTreino"],
-            "titulo": sessao["tituloBlocoTreino"],
-            "treino": {
-                "id": sessao["idTreino"],
-                "titulo": sessao["tituloTreino"],
-            },
-        }
-        sessoes_dict[sessao_id]["blocos"].append(bloco)
-
-    # Converte o dicionário de sessões em uma lista
-    planilha_data["sessoes"] = list(sessoes_dict.values())
-
-    # Exibindo a saída final
-    print(planilha_data)
+    print(db_get_planilhas_ativas_by_aluno(2, "2024-03-15"))

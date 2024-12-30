@@ -36,25 +36,11 @@ def db_create_new_treino(
     return id_treino
 
 
-# mudar para trazer tudo
-def db_get_treino_by_id(id_treino: int):
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    query = """
-        SELECT * FROM treinos WHERE id = %s;
-    """
-    cursor.execute(query, (id_treino,))
-    treino = cursor.fetchone()
-    cursor.close()
-    connection.close()
-    return treino
-
-
 def db_get_treinos_by_professor_id(id_professor: int):
     connection = get_db_connection()
     cursor = connection.cursor()
     query = """
-        SELECT * FROM treinos WHERE professorId = %s;
+        SELECT treinoId, titulo, descricao FROM treinos WHERE professorId = %s;
     """
     cursor.execute(query, (id_professor,))
     treinos = cursor.fetchall()

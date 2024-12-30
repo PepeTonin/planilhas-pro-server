@@ -24,3 +24,15 @@ def map_movimento_by_id_response(dados):
                 }
             )
     return movimento
+
+
+def map_treinos_by_professor_response(dados):
+    treinos = []
+    for treinoId, titulo, descricao in dados:
+        treino = {
+            "treinoId": treinoId,
+            "titulo": titulo,
+            "descricao": descricao,
+        }
+        treinos.append(treino)
+    return treinos

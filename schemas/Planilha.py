@@ -17,3 +17,10 @@ class BodyRequestCreatePlanilha(BaseModel):
     titulo: str
     descricao: str
     sessoes: List[BaseSessao]
+
+
+class BodyRequestVincular(BaseModel):
+    idProfessor: int
+    dataInicio: str
+    dataFim: str
+    alunos: List[int]
