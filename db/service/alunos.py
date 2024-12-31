@@ -90,3 +90,43 @@ def db_get_alunos_by_professor_grupo_and_subgrupo(
     cursor.close()
     connection.close()
     return alunos
+
+
+def db_get_aluno_by_firebase_id(firebaseId: str):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    query = """
+        SELECT
+            alunoId,
+            firebaseId,
+            nome,
+            email,
+            dataNascimento,
+            dataCadastro,
+            situacaoPagamento,
+            situacaoTreino,
+            ativo
+        FROM
+            alunos
+        WHERE
+            firebaseId = %s;
+    """
+    cursor.execute(query, (firebaseId,))
+    aluno = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    return aluno
+
+
+def db_create_new_aluno(firebaseId: str, nome: str, email: str, senha: str):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    query = """
+        INSERT INTO alunos (firebaseId, nome, email, senha)
+        VALUES (%s, %s, %s, %s);
+    """
+    cursor.execute(query, (firebaseId, nome, email, senha))
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return cursor.lastrowid

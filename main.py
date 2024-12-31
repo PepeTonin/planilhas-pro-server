@@ -23,8 +23,14 @@ from db.service.alunos import (
     db_get_alunos_by_professor,
     db_get_alunos_by_professor_and_grupo,
     db_get_alunos_by_professor_grupo_and_subgrupo,
+    db_get_aluno_by_firebase_id,
+    db_create_new_aluno,
 )
-from utils.mapping.alunos import map_alunos_in_id_nome, map_alunos
+from utils.mapping.alunos import (
+    map_alunos_in_id_nome,
+    map_alunos,
+    map_aluno_by_firebase_id_response,
+)
 
 from db.service.treinos import (
     db_create_new_treino,
@@ -55,6 +61,7 @@ from schemas.Login import BodyRequestLogin
 from schemas.Grupo import BodyRequestInsertGrupo, BodyRequestInsertSubGrupo
 from schemas.Treino import BodyRequestCreateTreino
 from schemas.Planilha import BodyRequestCreatePlanilha, BodyRequestVincular
+from schemas.Aluno import BodyRequestCreateAluno
 
 from utils.verifica_owner_planilha import verifica_owner_planilha
 
@@ -64,6 +71,7 @@ origins = [
     "http://localhost",
     "http://localhost:8080",
     "http://localhost:3000",
+    "exp://192.168.1.172:8081",
 ]
 
 app.add_middleware(
@@ -233,7 +241,27 @@ def vincular_planilha_a_aluno(request: BodyRequestVincular, idPlanilha: str):
     )
 
 
-@app.get("api/v1/aluno/{idAluno}/planilha")
+@app.get("/api/v1/aluno/{firebaseId}")
+def get_aluno_by_firebase_id(firebaseId: str):
+    aluno = db_get_aluno_by_firebase_id(firebaseId)
+    mapped_aluno = map_aluno_by_firebase_id_response(aluno)
+    return mapped_aluno
+
+
+@app.post("/api/v1/aluno/novo")
+def create_new_aluno(request: BodyRequestCreateAluno):
+    id_aluno = db_create_new_aluno(
+        request.firebaseId, request.nome, request.email, request.senha
+    )
+    if id_aluno:
+        return {"message": "Aluno inserido com sucesso", "id": id_aluno}
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Erro ao inserir aluno"},
+    )
+
+
+@app.get("/api/v1/aluno/{idAluno}/planilha")
 def get_planilhas_ativas_by_aluno(idAluno: str):
     planilhas = db_get_planilhas_ativas_by_aluno(idAluno, str(datetime.now().date()))
     print(planilhas)
