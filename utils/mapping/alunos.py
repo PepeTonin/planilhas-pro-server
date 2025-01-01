@@ -44,3 +44,13 @@ def map_aluno_by_firebase_id_response(dados):
         "role": "aluno",
     }
     return aluno
+
+
+def map_aluno_by_email_response(dados):
+    aluno = {
+        "id": dados[0],
+        "nome": dados[1],
+        "email": dados[2],
+        "dataCadastro": dados[3],
+    }
+    return aluno

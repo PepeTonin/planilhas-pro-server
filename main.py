@@ -25,11 +25,14 @@ from db.service.alunos import (
     db_get_alunos_by_professor_grupo_and_subgrupo,
     db_get_aluno_by_firebase_id,
     db_create_new_aluno,
+    db_get_aluno_by_email,
+    db_vincular_professor_a_aluno,
 )
 from utils.mapping.alunos import (
     map_alunos_in_id_nome,
     map_alunos,
     map_aluno_by_firebase_id_response,
+    map_aluno_by_email_response,
 )
 
 from db.service.treinos import (
@@ -61,7 +64,7 @@ from schemas.Login import BodyRequestLogin
 from schemas.Grupo import BodyRequestInsertGrupo, BodyRequestInsertSubGrupo
 from schemas.Treino import BodyRequestCreateTreino
 from schemas.Planilha import BodyRequestCreatePlanilha, BodyRequestVincular
-from schemas.Aluno import BodyRequestCreateAluno
+from schemas.Aluno import BodyRequestCreateAluno, BodyRequestVincularProfessorAluno
 
 from utils.verifica_owner_planilha import verifica_owner_planilha
 
@@ -261,6 +264,25 @@ def create_new_aluno(request: BodyRequestCreateAluno):
     )
 
 
+@app.get("/api/v1/aluno/email/{emailAluno}")
+def get_aluno_by_email(emailAluno: str):
+    aluno = db_get_aluno_by_email(emailAluno)
+    mapped_aluno = map_aluno_by_email_response(aluno)
+    return mapped_aluno
+
+
+@app.post("/api/v1/vincular/professor/aluno")
+def vincular_professor_a_aluno(request: BodyRequestVincularProfessorAluno):
+    resultado = db_vincular_professor_a_aluno(request.idProfessor, request.idAluno)
+    if resultado:
+        return {"message": "Professor vinculado com sucesso"}
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Erro ao vincular professor"},
+    )
+
+
+#  não usei ainda
 @app.get("/api/v1/aluno/{idAluno}/planilha")
 def get_planilhas_ativas_by_aluno(idAluno: str):
     planilhas = db_get_planilhas_ativas_by_aluno(idAluno, str(datetime.now().date()))

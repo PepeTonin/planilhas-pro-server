@@ -6,3 +6,8 @@ class BodyRequestCreateAluno(BaseModel):
     nome: str
     email: str
     senha: str
+
+
+class BodyRequestVincularProfessorAluno(BaseModel):
+    idProfessor: int
+    idAluno: int

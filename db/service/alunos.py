@@ -130,3 +130,44 @@ def db_create_new_aluno(firebaseId: str, nome: str, email: str, senha: str):
     cursor.close()
     connection.close()
     return cursor.lastrowid
+
+
+def db_get_aluno_by_email(email: str):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    query = """
+        SELECT
+            alunoId,
+            nome,
+            email,
+            dataCadastro
+        FROM
+            alunos
+        WHERE
+            email = %s;
+    """
+    cursor.execute(query, (email,))
+    aluno = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    return aluno
+
+
+def db_vincular_professor_a_aluno(idProfessor: str, idAluno: str):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        query = """
+            UPDATE alunos
+            SET professorId = %s
+            WHERE alunoId = %s;
+        """
+        cursor.execute(query, (idProfessor, idAluno))
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return True
+    except:
+        cursor.close()
+        connection.close()
+        return False
