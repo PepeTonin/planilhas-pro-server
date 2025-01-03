@@ -97,19 +97,23 @@ def db_get_aluno_by_firebase_id(firebaseId: str):
     cursor = connection.cursor()
     query = """
         SELECT
-            alunoId,
-            firebaseId,
-            nome,
-            email,
-            dataNascimento,
-            dataCadastro,
-            situacaoPagamento,
-            situacaoTreino,
-            ativo
+            a.alunoId,
+            a.firebaseId,
+            a.nome AS nome,
+            a.email,
+            a.dataNascimento,
+            a.dataCadastro,
+            a.situacaoPagamento,
+            a.situacaoTreino,
+            a.ativo,
+            a.professorId,
+            p.nome AS professorNome
         FROM
-            alunos
+            alunos a
+        LEFT JOIN
+            professores p ON a.professorId = p.professorId
         WHERE
-            firebaseId = %s;
+            a.firebaseId = %s;
     """
     cursor.execute(query, (firebaseId,))
     aluno = cursor.fetchone()

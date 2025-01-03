@@ -1,3 +1,19 @@
+# ######################################################## PARA TESTES
+# import os
+# import mysql.connector
+# from dotenv import load_dotenv
+# load_dotenv()
+# db_config = {
+#     "host": os.getenv("DB_HOST"),
+#     "user": os.getenv("DB_USER"),
+#     "password": os.getenv("DB_PASSWORD"),
+#     "database": os.getenv("DB_NAME"),
+# }
+# def get_db_connection():
+#     connection = mysql.connector.connect(**db_config)
+#     return connection
+# ######################################################## PARA TESTES
+
 from db.init import get_db_connection
 
 from utils.init_db_query import create_table_query
@@ -103,15 +119,12 @@ def db_vincular_planilha_aluno(
         return False
 
 
-def db_get_planilhas_ativas_by_aluno(idAluno: int, dataBuscada: str):
+def db_get_planilha_ativa_by_aluno(idAluno: int, dataBuscada: str):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     query = """
         SELECT
-            p.planilhaId AS planilhaId,
-            p.titulo AS tituloPlanilha,
-            p.descricao AS descricaoPlanilha,
-            p.professorId AS professorId,
+            p.planilhaId AS idPlanilha,
             s.sessaoId AS idSessao,
             s.titulo AS tituloSessao,
             bt.blocoTreinoId AS idBlocoTreino,
@@ -140,5 +153,37 @@ def db_get_planilhas_ativas_by_aluno(idAluno: int, dataBuscada: str):
     return planilha
 
 
+def db_get_bloco_by_id(idBloco: str):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    query = """
+        SELECT 
+            t.treinoId,
+            t.titulo AS tituloTreino,
+            t.descricao AS descricaoTreino,
+            m.movimentoId,
+            m.titulo AS tituloMovimento,
+            dm.descricao AS descricaoMovimento
+        FROM 
+            blocos_treino bt
+        JOIN 
+            treinos t ON bt.treinoId = t.treinoId
+        LEFT JOIN 
+            treino_movimento_relacionamentos tmr ON t.treinoId = tmr.treinoId
+        LEFT JOIN 
+            movimentos m ON tmr.movimentoId = m.movimentoId
+        LEFT JOIN 
+            descricoes_movimentos dm ON m.movimentoId = dm.movimentoId
+        WHERE 
+            bt.blocoTreinoId = %s;
+    """
+    cursor.execute(query, (idBloco,))
+    bloco = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return bloco
+
+
 if __name__ == "__main__":
-    print(db_get_planilhas_ativas_by_aluno(2, "2024-03-15"))
+    dados = db_get_bloco_by_id("1")
+    print(dados)

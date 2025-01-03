@@ -43,3 +43,55 @@ def map_planilha_by_id_response(dados):
     planilha["sessions"] = list(sessoes_dict.values())
 
     return planilha
+
+
+def map_planilha_ativa_by_aluno_response(dados):
+    planilha_aluno = {
+        "idPlanilha": dados[0]["idPlanilha"],
+        "sessoes": [],
+    }
+
+    sessoes_dict = {}
+
+    for sessao in dados:
+        sessao_id = sessao["idSessao"]
+        if sessao_id not in sessoes_dict:
+            sessoes_dict[sessao_id] = {
+                "idSessao": sessao["idSessao"],
+                "tituloSessao": sessao["tituloSessao"],
+                "blocos": [],
+            }
+        bloco = {
+            "idBloco": sessao["idBlocoTreino"],
+            "tituloBloco": sessao["tituloBlocoTreino"],
+            "treino": {
+                "idTreino": sessao["idTreino"],
+                "tituloTreino": sessao["tituloTreino"],
+            },
+        }
+        sessoes_dict[sessao_id]["blocos"].append(bloco)
+
+    planilha_aluno["sessoes"] = list(sessoes_dict.values())
+
+    return planilha_aluno
+
+
+def map_bloco_by_id_response(dados, idBloco: str):
+    movimentos = {}
+    for movimento in dados:
+        movimento_id = movimento["movimentoId"]
+        if movimento_id not in movimentos:
+            movimentos[movimento_id] = {
+                "idMovimento": movimento_id,
+                "tituloMovimento": movimento["tituloMovimento"],
+                "descricoes": [],
+            }
+        movimentos[movimento_id]["descricoes"].append(movimento["descricaoMovimento"])
+
+    detalhes_bloco_treino = {
+        "idBloco": idBloco,
+        "idTreino": dados[0]["treinoId"],
+        "movimentos": list(movimentos.values()),
+    }
+
+    return detalhes_bloco_treino

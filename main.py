@@ -52,11 +52,14 @@ from db.service.planilhas import (
     db_get_planilha_by_id,
     db_create_new_planilha,
     db_vincular_planilha_aluno,
-    db_get_planilhas_ativas_by_aluno,
+    db_get_planilha_ativa_by_aluno,
+    db_get_bloco_by_id,
 )
 from utils.mapping.planilhas import (
     map_modelos_by_professor_response,
+    map_planilha_ativa_by_aluno_response,
     map_planilha_by_id_response,
+    map_bloco_by_id_response,
 )
 
 
@@ -282,8 +285,15 @@ def vincular_professor_a_aluno(request: BodyRequestVincularProfessorAluno):
     )
 
 
-#  não usei ainda
 @app.get("/api/v1/aluno/{idAluno}/planilha")
-def get_planilhas_ativas_by_aluno(idAluno: str):
-    planilhas = db_get_planilhas_ativas_by_aluno(idAluno, str(datetime.now().date()))
-    print(planilhas)
+def get_planilha_ativa_by_aluno(idAluno: str):
+    planilha = db_get_planilha_ativa_by_aluno(idAluno, "2025-01-15")
+    mapped_planilha = map_planilha_ativa_by_aluno_response(planilha)
+    return mapped_planilha
+
+
+@app.get("/api/v1/bloco/{idBloco}")
+def get_bloco_by_id(idBloco: str):
+    bloco = db_get_bloco_by_id(idBloco)
+    mapped_bloco = map_bloco_by_id_response(bloco, idBloco)
+    return mapped_bloco

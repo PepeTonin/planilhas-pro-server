@@ -41,6 +41,8 @@ def map_aluno_by_firebase_id_response(dados):
         "situacaoPagamento": dados[6],
         "situacaoTreino": dados[7],
         "ativo": dados[8],
+        "professorId": dados[9],
+        "professorNome": dados[10],
         "role": "aluno",
     }
     return aluno
