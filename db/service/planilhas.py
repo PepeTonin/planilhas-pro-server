@@ -184,6 +184,29 @@ def db_get_bloco_by_id(idBloco: str):
     return bloco
 
 
+def db_get_historico_planilhas_by_aluno(alunoId: int, dataBuscada: str):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    query = """
+        SELECT 
+            planilhaId,
+            dataInicio,
+            dataFim
+        FROM 
+            alunos_planilhas
+        WHERE 
+            alunoId = %s
+            AND dataFim < %s
+        ORDER BY 
+            dataFim DESC;
+    """
+    cursor.execute(query, (alunoId, dataBuscada))
+    planilhas = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return planilhas
+
+
 if __name__ == "__main__":
     dados = db_get_bloco_by_id("1")
     print(dados)

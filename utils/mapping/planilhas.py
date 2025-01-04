@@ -95,3 +95,16 @@ def map_bloco_by_id_response(dados, idBloco: str):
     }
 
     return detalhes_bloco_treino
+
+
+def map_historico_planilhas_by_aluno_response(dados):
+    historico = []
+    for planilha in dados:
+        historico.append(
+            {
+                "idPlanilha": planilha["planilhaId"],
+                "dataInicio": planilha["dataInicio"],
+                "dataFim": planilha["dataFim"],
+            }
+        )
+    return historico
