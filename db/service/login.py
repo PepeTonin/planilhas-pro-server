@@ -19,7 +19,6 @@ def db_login_professor(email: str, senha: str):
     """
     cursor.execute(query, (email,))
     professor = cursor.fetchone()
-    print(professor)
     cursor.close()
     connection.close()
     if professor and professor[3] == senha and professor[4] == 1:

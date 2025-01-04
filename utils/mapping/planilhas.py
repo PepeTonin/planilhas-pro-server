@@ -30,15 +30,16 @@ def map_planilha_by_id_response(dados):
                 "title": sessao["tituloSessao"],
                 "trainingBlocks": [],
             }
-        bloco = {
-            "id": sessao["idBlocoTreino"],
-            "title": sessao["tituloBlocoTreino"],
-            "linkedTraining": {
-                "id": sessao["idTreino"],
-                "title": sessao["tituloTreino"],
-            },
-        }
-        sessoes_dict[sessao_id]["trainingBlocks"].append(bloco)
+        if sessao["idBlocoTreino"] is not None:
+            bloco = {
+                "id": sessao["idBlocoTreino"],
+                "title": sessao["tituloBlocoTreino"],
+                "linkedTraining": {
+                    "id": sessao["idTreino"],
+                    "title": sessao["tituloTreino"],
+                },
+            }
+            sessoes_dict[sessao_id]["trainingBlocks"].append(bloco)
 
     planilha["sessions"] = list(sessoes_dict.values())
 
