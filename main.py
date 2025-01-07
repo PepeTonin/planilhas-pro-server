@@ -283,8 +283,7 @@ def vincular_professor_a_aluno(request: BodyRequestVincularProfessorAluno):
 
 @app.get("/api/v1/aluno/{idAluno}/planilha")
 def get_planilha_ativa_by_aluno(idAluno: str):
-    # dataBuscada = datetime.now().strftime("%Y-%m-%d")
-    dataBuscada = "2025-01-22"
+    dataBuscada = datetime.now().strftime("%Y-%m-%d")
     planilha = db_get_planilha_ativa_by_aluno(idAluno, dataBuscada)
     mapped_planilha = map_planilha_ativa_by_aluno_response(planilha)
     return mapped_planilha
@@ -299,8 +298,7 @@ def get_bloco_by_id(idBloco: str):
 
 @app.get("/api/v1/aluno/{idAluno}/planilha/historico")
 def get_historico_planilhas_by_aluno(idAluno: str):
-    # dataBuscada = datetime.now().strftime("%Y-%m-%d")
-    dataBuscada = "2025-01-30"
+    dataBuscada = datetime.now().strftime("%Y-%m-%d")
     historico_planilhas = db_get_historico_planilhas_by_aluno(idAluno, dataBuscada)
     mapped_historico_planilhas = map_historico_planilhas_by_aluno_response(
         historico_planilhas
